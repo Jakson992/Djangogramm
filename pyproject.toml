@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "analyze-and-decompose-djangogramm"
+version = "0.1.0"
+description = ""
+authors = ["Yevheniy Petrenko <yevheniipetrenko92@gmail.com>"]
+readme = "README.md"
+packages = [{include = "analyze_and_decompose_djangogramm"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.2.8"
+django-taggit = "^6.0.0"
+easy-thumbnails = "^2.9"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

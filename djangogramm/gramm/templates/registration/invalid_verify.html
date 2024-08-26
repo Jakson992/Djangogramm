@@ -1,0 +1,8 @@
+{% extends 'gramm/base.html' %}
+
+{% block content %}
+    <div class="row">
+        <p>Your link is incorrect, please proceed with the authentication.</p>
+        <a href="{% url 'login' %}">Authorization</a>
+    </div>
+{% endblock %}

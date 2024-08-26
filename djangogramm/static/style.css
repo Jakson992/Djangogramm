@@ -1,0 +1,16 @@
+:root {
+  --header-height: 170px; /* Висота вашої верхньої області */
+}
+
+.fixed-top {
+  height: var(--header-height);
+}
+
+html, body {
+	font-family: 'Kristen ITC';
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+	color: #0059b2;
+}
