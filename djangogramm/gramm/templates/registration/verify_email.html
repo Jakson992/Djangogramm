@@ -1,0 +1,5 @@
+{% autoescape off %}
+    Hi {{ user.get_username }},
+    to complete the registration, you need to follow the link.
+    http://{{ domain }}{% url 'verify_email' uidb64=uid token=token %}
+{% endautoescape %}
