@@ -44,12 +44,12 @@ class UserRegistrationForm(DjangoUserCreationForm):
     email = forms.EmailField(
         label=_('Email'),
         max_length=250,
-        widget=forms.TextInput(attrs={'placeholder': 'Password'})
+        widget=forms.TextInput(attrs={'placeholder': 'Email'})
     )
     password1 = forms.CharField(
         label=_('Password'),
         widget=forms.PasswordInput(attrs={'placeholder':
-                                              'Confirm Password'})
+                                              'Password'})
     )
 
     class Meta(DjangoUserCreationForm.Meta):
@@ -73,8 +73,8 @@ class CreatePostForm(forms.ModelForm):
         label='Tags',
     )
     image1 = forms.ImageField(widget=forms.ClearableFileInput(), required=True)
-    image2 = forms.ImageField(widget=forms.ClearableFileInput(), required=True)
-    image3 = forms.ImageField(widget=forms.ClearableFileInput(), required=True)
+    image2 = forms.ImageField(widget=forms.ClearableFileInput(), required=False)
+    image3 = forms.ImageField(widget=forms.ClearableFileInput(), required=False)
 
     class Meta:
         model = Post

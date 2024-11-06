@@ -169,7 +169,7 @@ def like_post(request):
     if request.method == 'POST':
         form = LikeForm(request.POST)
         if form.is_valid():
-            post_id = form.cleaned_data.get['post_id']
+            post_id = form.cleaned_data.get('post_id')
             post = Post.objects.get(id=post_id)
             if request.user not in post.likes.all():
                 post.likes.add(request.user)

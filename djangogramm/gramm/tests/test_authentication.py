@@ -62,3 +62,8 @@ class UserTestClass(TestCase):
         self.client.post(self.register_url, user_data)
         response = self.client.post(self.register_url, user_data)
         self.assertEqual(response.status_code, 200)
+
+    def test_logout(self):
+        self.client.login(email='email1@example.com', password='password1')
+        response = self.client.get(self.logout_url)
+        self.assertRedirects(response, '/')
