@@ -3,4 +3,5 @@
 __pycache__/
 .coverage
 .pytest_cache
+Codewars/codewars.py
 
