@@ -7,10 +7,9 @@ class TestViewsLoggedIn(TestCase):
     def setUp(self):
         self.client = Client()
         self.login_url = reverse('login')
-        self.profile_url = reverse('profile_user', kwargs={'pk': 1})  # Замените 1 на идентификатор пользователя.
+        self.profile_url = reverse('profile_user', kwargs={'pk': 1})
         self.profile_settings_url = reverse('profile_edit')
 
-        # Создание пользователя
         self.verified_user = User.objects.create_user(
             email='test.email1@gmail.com',
             username='username',
@@ -28,7 +27,6 @@ class TestViewsLoggedIn(TestCase):
 
         }
 
-        # Логинимся этим пользователем
         self.client.login(email='test.email1@gmail.com', password='strongpassword')
 
     def test_profile_GET(self):
@@ -39,18 +37,15 @@ class TestViewsLoggedIn(TestCase):
     def test_profile_settings_GET(self):
         response = self.client.get(self.profile_settings_url)
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'gramm/profile_edit.html')  # Use the correct template here
+        self.assertTemplateUsed(response, 'gramm/profile_edit.html')
 
     def test_profile_settings_POST(self):
         response = self.client.post(self.profile_settings_url, self.profile_settings)
-        self.assertEqual(response.status_code, 302)  # Проверяем редирект
+        self.assertEqual(response.status_code, 302)
 
-        # Проверяем, что редирект ведет на правильный URL
         self.assertRedirects(response, reverse('profile_user', kwargs={'pk': self.verified_user.pk}))
 
-        # Проверяем, что данные обновились
         self.verified_user.refresh_from_db()
         self.assertEqual(self.verified_user.first_name, 'John')
         self.assertEqual(self.verified_user.last_name, 'Doe')
         self.assertEqual(self.verified_user.bio, 'bio')
-
