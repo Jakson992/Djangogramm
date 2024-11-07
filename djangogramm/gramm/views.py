@@ -36,7 +36,7 @@ class EmailVerify(View):
             user.email_verify = True
             user.save()
             login(request, user)
-            return redirect('home')
+            return redirect('feed')
         return redirect('invalid_verify')
 
     @staticmethod
@@ -163,7 +163,7 @@ class CreatePostView(View):
             all_tags = list(tags) + list(tags2)
             post.tags.add(*all_tags)
 
-            return redirect('home')
+            return redirect('feed')
 
 def like_post(request):
     if request.method == 'POST':
