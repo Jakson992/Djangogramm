@@ -1,7 +1,7 @@
 /venv/
-/.idea/
+.idea/
 __pycache__/
 .coverage
 .pytest_cache
-Codewars/codewars.py
+Codewars/
 
