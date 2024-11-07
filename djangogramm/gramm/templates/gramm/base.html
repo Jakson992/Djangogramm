@@ -27,7 +27,7 @@
     <li class="list-group-item">
         {% if user.is_authenticated %}
             <a href="{% url 'feed' %}">Feed</a>
-            <a href="{% url 'home' %}">Home</a>
+
             <a href="{% url 'create_post' %}">Create post</a>
         {% endif %}
     </li>
