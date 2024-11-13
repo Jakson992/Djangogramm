@@ -83,3 +83,6 @@ class CreatePostForm(forms.ModelForm):
 
 class LikeForm(forms.Form):
     post_id = forms.IntegerField(widget=forms.HiddenInput())
+
+class FollowForm(forms.Form):
+    user_id = forms.IntegerField(widget=forms.HiddenInput())

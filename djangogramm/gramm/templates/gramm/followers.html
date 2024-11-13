@@ -1,0 +1,11 @@
+{% extends  'gramm/base.html' %}
+
+{% block content %}
+
+    <h2>{{followers_count}} users follow {{user.username}}:</h2>
+
+    {% for follower in followers %}
+        <p><a href="/profile/?uid={{follower.follow_from__user_id}}">{{follower.follow_from__username}}</a></p>
+    {% endfor %}
+
+{% endblock %}
