@@ -59,14 +59,14 @@
         <p><a href="/profile/?uid={{user.user_id}}"> {{user.username}}</a></p>
         {% endfor %}
     </div>
-<!--        <p class="card-text">-->
-<!--        {{followers}}-->
-<!--        <a href="{% url 'followers' user.id %}">Followers</a>-->
-<!--    </p>-->
-<!--    <p class="card-text">-->
-<!--        {{followings}}-->
-<!--        <a href="{% url 'following' user.id %}">Follows</a>-->
-<!--    </p>-->
+        <p class="card-text">
+        {{followers}}
+        <a href="{% url 'followers' user.id %}">Followers</a>
+    </p>
+    <p class="card-text">
+        {{followings}}
+        <a href="{% url 'following' user.id %}">Follows</a>
+    </p>
 
 
 </div>

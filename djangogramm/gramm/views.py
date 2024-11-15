@@ -13,10 +13,10 @@ from django.utils.decorators import method_decorator
 from django.utils.http import urlsafe_base64_decode
 from django.views import View, generic
 
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .forms import LoginUserForm, UserRegistrationForm, CreatePostForm, LikeForm
+from .forms import LoginUserForm, UserRegistrationForm, CreatePostForm, LikeForm, FollowForm
 from .models import Post, Image, AuthorFollower
 from .utils import send_email_for_verify
 
@@ -191,25 +191,36 @@ class ProfileUser(generic.DetailView):
                 redirect('feed')
 
 
-class FeedPage(generic.ListView):
+class FeedPage(ListView):
     model = Post
     template_name = 'gramm/feed.html'
     context_object_name = 'posts'
     paginate_by = 5
 
     def get_queryset(self):
+        # Оптимизация запросов для Post
         return (Post.objects.all().order_by('-creation_date')
                 .prefetch_related('tags', 'images', 'likes')
                 .select_related('author'))
 
-    def get(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        paginator = Paginator(queryset, self.paginate_by)
-        page = request.GET.get('page')
-        posts = paginator.get_page(page)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        posts_with_followings = []
 
-        return render(request, self.template_name, {'posts': posts})
+        # Проверка подписки для каждого поста на текущей странице
+        for post in context['page_obj']:
+            is_follow = AuthorFollower.objects.filter(
+                follower=self.request.user,
+                author=post.author
+            ).exists()
+            posts_with_followings.append({
+                'post': post,
+                'following_status': is_follow
+            })
 
+        # Добавляем данные в контекст
+        context['posts_with_followings'] = posts_with_followings
+        return context
 
 class CreatePostView(View):
     template_name = 'gramm/create_post.html'
@@ -254,7 +265,6 @@ def like_post(request):
         return redirect(referer)
 
 
-
 @login_required
 def follow_user(request):
     if request.method == 'POST':
@@ -267,12 +277,8 @@ def follow_user(request):
         existing_follow = AuthorFollower.objects.filter(follower=request.user, author=target_user)
         if existing_follow.exists():
             existing_follow.delete()
-            context = {'existing_follow': False}
         else:
             AuthorFollower.objects.create(follower=request.user, author=target_user)
-            context = {'existing_follow': True}
 
-        return redirect(request.META.get('HTTP_REFERER', '/'),'gramm/feed.html',context)
+        return redirect('feed')
     return HttpResponseForbidden("Invalid request method.")
-
-
