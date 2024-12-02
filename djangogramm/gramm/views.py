@@ -1,11 +1,11 @@
 from random import sample
 
-from django.contrib import auth, messages
+from django.contrib import auth
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseForbidden
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.views import LoginView as DjangoLoginView
 
@@ -16,7 +16,7 @@ from django.views import View, generic
 from django.views.generic import TemplateView, ListView
 from django.contrib.auth.tokens import default_token_generator as \
     token_generator
-from .forms import LoginUserForm, UserRegistrationForm, CreatePostForm, LikeForm, FollowForm
+from .forms import LoginUserForm, UserRegistrationForm, CreatePostForm, LikeForm
 from .models import Post, Image, AuthorFollower
 from .utils import send_email_for_verify
 
@@ -129,68 +129,24 @@ class ProfileUser(generic.DetailView):
         return render(request, 'profile_user.html', context)
 
     def profile_user(request):
-        if request.method == "GET":
-            followings = AuthorFollower.objects.filter(follow_from=request.user)
+        # if request.method == "GET":
+        followings = AuthorFollower.objects.filter(follow_from=request.user)
 
-            posts = Post.objects.filter(Q(user=request.user) | Q(user__in=followings.values('follow_to'))). \
-                prefetch_related('images').order_by('-time_created')
-            not_followed = list(User.objects.exclude(Q(username=request.user.username) |
-                                                     Q(username__in=followings.values('follow_to__username'))))
-            if len(not_followed) < 5:
-                context = {'posts': posts,
-                           'not_followed': not_followed}
-            else:
-                random_not_followed = sample(not_followed, 5)
-                context = {'posts': posts,
-                           'not_followed': random_not_followed}
-            return render(request, 'home.html', context)
-
-    def unfollow_user(request, user_id):
-        if request.method == 'POST':
-            try:
-                user = User.objects.get(user_id=user_id)
-                if user == request.user:
-                    messages.error(request, 'You can not unfollow yourself.')
-
-                try:
-                    following = AuthorFollower.objects.filter(follow_from=request.user, follow_to=user)
-                    if following:
-                        AuthorFollower.objects.filter(follow_from=request.user, follow_to=user).delete()
-                    return HttpResponseRedirect("/profile/?uid={}".format(user_id))
-                except:
-                    return HttpResponseRedirect("/profile/?uid={}".format(user_id))
-            except:
-                redirect('feed')
-
-    def show_followers(request, user_id):
-        if request.method == 'GET':
-            try:
-                user = User.objects.get(user_id=user_id)
-                followers = AuthorFollower.objects.filter(follow_to=user).values('follow_from__username',
-                                                                                 'follow_from__user_id')
-                followers_count = len(followers)
-                context = {'followers': followers,
-                           'followers_count': followers_count,
-                           'user': user}
-                return render(request, 'followers.html', context)
-            except:
-                redirect('feed')
-
-    def show_followings(request, user_id):
-        if request.method == 'GET':
-            try:
-                user = User.objects.get(user_id=user_id)
-                following = AuthorFollower.objects.filter(follow_from=user).values('follow_to__username',
-                                                                                   'follow_to__user_id')
-                following_count = len(following)
-                context = {'following': following,
-                           'followers_count': following_count,
-                           'user': user}
-                return render(request, 'followings.html', context)
-            except:
-                redirect('feed')
+        posts = Post.objects.filter(Q(user=request.user) | Q(user__in=followings.values('follow_to'))). \
+            prefetch_related('images').order_by('-time_created')
+        not_followed = list(User.objects.exclude(Q(username=request.user.username) |
+                                                 Q(username__in=followings.values('follow_to__username'))))
+        if len(not_followed) < 5:
+            context = {'posts': posts,
+                       'not_followed': not_followed}
+        else:
+            random_not_followed = sample(not_followed, 5)
+            context = {'posts': posts,
+                       'not_followed': random_not_followed}
+        return render(request, 'feed.html', context)
 
 
+@method_decorator(login_required, name='dispatch')
 class FeedPage(ListView):
     model = Post
     template_name = 'gramm/feed.html'
@@ -198,13 +154,16 @@ class FeedPage(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        # Оптимизация запросов для Post
-        return (Post.objects.all().order_by('-creation_date')
-                .prefetch_related('tags', 'images', 'likes')
-                .select_related('author'))
+        queryset = (Post.objects.all()
+                    .order_by('-creation_date')  # Sort by newest posts
+                    .prefetch_related('tags', 'images', 'likes')
+                    .select_related('author'))
+        # print(queryset.query)  # Check the SQL query
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
         posts_with_followings = []
 
         # Проверка подписки для каждого поста на текущей странице
@@ -218,10 +177,12 @@ class FeedPage(ListView):
                 'following_status': is_follow
             })
 
-        # Добавляем данные в контекст
         context['posts_with_followings'] = posts_with_followings
+
         return context
 
+
+@method_decorator(login_required, name='dispatch')
 class CreatePostView(View):
     template_name = 'gramm/create_post.html'
 
@@ -251,6 +212,7 @@ class CreatePostView(View):
             return redirect('feed')
 
 
+@login_required
 def like_post(request):
     if request.method == 'POST':
         form = LikeForm(request.POST)
@@ -282,3 +244,39 @@ def follow_user(request):
 
         return redirect('feed')
     return HttpResponseForbidden("Invalid request method.")
+
+
+@method_decorator(login_required, name='dispatch')
+class FollowersView(View):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            followers = AuthorFollower.objects.filter(author=user).values(
+                'follower__username', 'follower__id'
+            )
+            followers_count = len(followers)
+            context = {
+                'followers': followers,
+                'followers_count': followers_count,
+                'user': user
+            }
+            return render(request, 'gramm/followers.html', context)
+        except User.DoesNotExist:
+            return redirect('feed')
+
+
+@method_decorator(login_required, name='dispatch')
+class FollowingsView(View):
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            followings = AuthorFollower.objects.filter(follower=user).select_related('author')
+            followings_count = followings.count()
+            context = {
+                'followings': followings,
+                'followings_count': followings_count,
+                'user': user
+            }
+            return render(request, 'gramm/followings.html', context)
+        except User.DoesNotExist:
+            return redirect('feed')

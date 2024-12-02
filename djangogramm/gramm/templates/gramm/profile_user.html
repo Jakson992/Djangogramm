@@ -6,19 +6,19 @@
     <li class="list-group-item">
     <li>
 
-        <br>
-        {% if user.is_authenticated %}
+<!--        <br>-->
+<!--        {% if user.is_authenticated %}-->
 
-        {% endif %}
-    </li>
-    {% if user.avatar %}
-        <img src="{% thumbnail user.avatar "medium" %}" alt="User Avatar">
-    {% else %}
-        <img src="{% static 'images/default_avatar.jpeg' %}" alt="Default Avatar" width="150">
-    {% endif %}
+<!--        {% endif %}-->
+<!--    </li>-->
+<!--    {% if user.avatar %}-->
+<!--        <img src="{% thumbnail user.avatar "medium" %}" alt="User Avatar">-->
+<!--    {% else %}-->
+<!--        <img src="{% static 'images/default_avatar.jpeg' %}" alt="Default Avatar" width="150">-->
+<!--    {% endif %}-->
 
-    <p>{{ user.bio }}</p>
-    </li>
+<!--    <p>{{ user.bio }}</p>-->
+<!--    </li>-->
 
 
 
@@ -53,6 +53,8 @@
 <!--                </button>-->
 <!--            </form>-->
 
+
+
     <div class="col-md-4">
         <h5>Follow more:</h5>
         {% for user in not_followed %}
@@ -65,7 +67,7 @@
     </p>
     <p class="card-text">
         {{followings}}
-        <a href="{% url 'following' user.id %}">Follows</a>
+        <a href="{% url 'followings' user.id %}">Followings</a>
     </p>
 
 

@@ -2,10 +2,10 @@
 
 {% block content %}
 
-    <h2>{{user.username}} follows {{following_count}} users:</h2>
+    <h2>{{ followings_count }} user(s) following(s) {{ user.username }} :</h2>
 
-    {% for usr in following %}
-        <p><a href="/profile/?uid={{usr.follow_to__user_id}}">{{usr.follow_to__username}}</a></p>
+    {% for following in followings %}
+        <p><a href="{% url 'profile_user' user.pk %}">{{following.author.username}}</a></p>
     {% endfor %}
 
 {% endblock %}

@@ -2,50 +2,53 @@
 {% load thumbnail %}
 
 {% block content %}
-<hr>
-{% include 'gramm/pagination.html' %}
-<hr>
-
-{% for post_with_following in posts_with_followings %}
-
-<div class="post_with_following.post">
-    <h3>{{ post_with_following.post.author.username }}</h3>
-
-{% if user.is_authenticated and post_with_following.post.author != user %}
-<form method="post" action="{% url 'follow_user' %}">
-    {% csrf_token %}
-    <input type="hidden" name="author_id" value="{{ post_with_following.post.author.id }}">
-    <button type="submit">
-        {% if post_with_following.following_status %}
-            Follow
-        {% else %}
-            Unfollow
-        {% endif %}
-    </button>
-</form>
-{% endif %}
-
-
-    <p>{{ post_with_following.post.creation_date }}</p>
+    <hr>
+    {% include 'gramm/pagination.html' %}
     <hr>
 
-    {% for image in post_with_following.post.images.all %}
+{% for item in posts_with_followings %}
+
+<div class="post">
+    <h3>{{ item.post.author.username }}</h3>
+
+    {% if user.is_authenticated and item.post.author != user %}
+    <form method="post" action="{% url 'follow_user' %}">
+        {% csrf_token %}
+        <input type="hidden" name="author_id" value="{{ item.post.author.id }}">
+        <button type="submit">
+            {% if item.following_status %}
+            Unfollow
+            {% else %}
+            Follow
+            {% endif %}
+        </button>
+    </form>
+    {% endif %}
+
+    <p>{{ item.post.creation_date }}</p>
+    <hr>
+
+    {% for image in item.post.images.all %}
     <a href="{{ image.image.url }}">
-        <img src="{% thumbnail image.image 300x300 %}" alt="Image">
+        <img src="{% thumbnail image.image 300x300 %}" alt="Post Image">
     </a>
     {% endfor %}
     <br>
 
-    <p>Tags: {% for tag in post_with_following.post.tags.all %}#{{ tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+    <p>Tags:
+        {% for tag in item.post.tags.all %}
+            #{{ tag }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
 
-    <p>{{ post_with_following.post.author.username }} - {{ post_with_following.post.likes.count }} likes</p>
+    <p>{{ item.post.likes.count }} likes</p>
 
     {% if user.is_authenticated %}
     <form method="post" action="{% url 'like_post' %}">
         {% csrf_token %}
-        <input type="hidden" name="post_id" value="{{ post.id }}">
+        <input type="hidden" name="post_id" value="{{ item.post.id }}">
         <button type="submit">
-            {% if user in post_with_following.post.likes.all %}
+            {% if user in item.post.likes.all %}
             Unlike
             {% else %}
             Like

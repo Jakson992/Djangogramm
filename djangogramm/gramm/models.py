@@ -26,10 +26,7 @@ class Post(models.Model):
     creation_date = models.DateTimeField('User', auto_now=True)
 
 
-
-
 class Image(models.Model):
-    # image = models.ImageField(upload_to='images/%Y/%m/%d')
     image = ThumbnailerImageField(upload_to='images/%Y/%m/%d')
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='images')
 
@@ -37,7 +34,6 @@ class Image(models.Model):
 class AuthorFollower(models.Model):
     author = models.ForeignKey('User', on_delete=models.CASCADE, related_name='author')
     follower = models.ForeignKey('User', on_delete=models.CASCADE, related_name='follower')
-
 
     class Meta:
         unique_together = ('author', 'follower')

@@ -28,6 +28,7 @@ ALLOWED_HOSTS = ['*', ]
 
 # Application definition
 
+LOGIN_URL = '/gramm/auth/login/'
 AUTH_USER_MODEL = 'gramm.User'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
