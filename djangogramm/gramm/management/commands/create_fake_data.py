@@ -68,12 +68,12 @@ class Command(BaseCommand):
     help = 'Generate fake data for users, posts, and tags'
 
     def handle(self, *args, **kwargs):
-        users_count = 20
+        users_count = 10
         users = [create_user() for _ in range(users_count)]
         tags = create_fake_tags()
 
         for user in users:
-            for _ in range(random.randint(1, 21)):
+            for _ in range(random.randint(1, 3)):
                 post = create_post(user)
                 post.tags.add(*random.sample(tags, random.randint(1, 5)))
 

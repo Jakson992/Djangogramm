@@ -1,9 +1,0 @@
-{% extends 'gramm/base.html' %}
-
-{% block content %}
-    <form method="POST" action="{% url 'profile_edit' %}" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Save</button>
-    </form>
-{% endblock %}

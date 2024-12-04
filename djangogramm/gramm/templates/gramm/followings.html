@@ -1,0 +1,11 @@
+{% extends  'gramm/base.html' %}
+
+{% block content %}
+
+    <h2>{{ followings_count }} user(s) following(s) {{ user.username }} :</h2>
+
+    {% for following in followings %}
+        <p><a href="{% url 'profile_user' user.pk %}">{{following.author.username}}</a></p>
+    {% endfor %}
+
+{% endblock %}

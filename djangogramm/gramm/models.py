@@ -27,6 +27,13 @@ class Post(models.Model):
 
 
 class Image(models.Model):
-    # image = models.ImageField(upload_to='images/%Y/%m/%d')
     image = ThumbnailerImageField(upload_to='images/%Y/%m/%d')
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='images')
+
+
+class AuthorFollower(models.Model):
+    author = models.ForeignKey('User', on_delete=models.CASCADE, related_name='author')
+    follower = models.ForeignKey('User', on_delete=models.CASCADE, related_name='follower')
+
+    class Meta:
+        unique_together = ('author', 'follower')

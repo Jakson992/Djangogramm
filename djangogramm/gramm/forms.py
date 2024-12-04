@@ -73,13 +73,16 @@ class CreatePostForm(forms.ModelForm):
         label='Tags',
     )
     image1 = forms.ImageField(widget=forms.ClearableFileInput(), required=True)
-    image2 = forms.ImageField(widget=forms.ClearableFileInput(), required=False)
-    image3 = forms.ImageField(widget=forms.ClearableFileInput(), required=False)
 
     class Meta:
         model = Post
-        fields = ['tags', 'tags2', 'image1', 'image2', 'image3']
+        fields = ['tags', 'tags2', 'image1']
         labels = {'tags': 'Add new tag(s)'}
+
 
 class LikeForm(forms.Form):
     post_id = forms.IntegerField(widget=forms.HiddenInput())
+
+
+class FollowForm(forms.Form):
+    author_id = forms.IntegerField(widget=forms.HiddenInput())
