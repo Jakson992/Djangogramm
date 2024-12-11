@@ -1,6 +1,8 @@
 {% extends 'gramm/base.html' %}
 {% load thumbnail %}
 
+{% load cloudinary %}
+
 {% block content %}
     <hr>
     {% include 'gramm/pagination.html' %}
@@ -30,7 +32,7 @@
 
     {% for image in item.post.images.all %}
     <a href="{{ image.image.url }}">
-        <img src="{% thumbnail image.image 300x300 %}" alt="Post Image">
+        <img src="{% cloudinary image.image height=200 width=200 crop='fill'  %}" alt="Post Image">
     </a>
     {% endfor %}
     <br>
