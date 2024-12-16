@@ -1,5 +1,7 @@
 {% extends 'gramm/base.html' %}
-{% load thumbnail %}
+
+
+{% load cloudinary %}
 
 {% block content %}
     <hr>
@@ -15,7 +17,7 @@
     <form method="post" action="{% url 'follow_user' %}">
         {% csrf_token %}
         <input type="hidden" name="author_id" value="{{ item.post.author.id }}">
-        <button type="submit">
+        <button type="submit" class="btn btn-success">
             {% if item.following_status %}
             Unfollow
             {% else %}
@@ -29,9 +31,8 @@
     <hr>
 
     {% for image in item.post.images.all %}
-    <a href="{{ image.image.url }}">
-        <img src="{% thumbnail image.image 300x300 %}" alt="Post Image">
-    </a>
+        {% cloudinary image.image height=200 width=200   %}
+
     {% endfor %}
     <br>
 
@@ -47,7 +48,7 @@
     <form method="post" action="{% url 'like_post' %}">
         {% csrf_token %}
         <input type="hidden" name="post_id" value="{{ item.post.id }}">
-        <button type="submit">
+        <button type="submit" class="btn btn-danger">
             {% if user in item.post.likes.all %}
             Unlike
             {% else %}

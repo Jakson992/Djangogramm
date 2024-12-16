@@ -3,6 +3,8 @@ import os
 import django
 from PIL import Image as pil
 from io import BytesIO
+from cloudinary.uploader import upload
+
 from faker import Faker
 
 from taggit.models import Tag
@@ -14,6 +16,8 @@ django.setup()
 
 fake = Faker()
 
+
+# Функция для создания одноцветного изображения
 def create_image(width=333, height=777):
     red = random.randint(0, 255)
     green = random.randint(0, 255)
@@ -27,15 +31,17 @@ def create_image(width=333, height=777):
     buffer.seek(0)
     return buffer
 
+
+# Функция для создания фейковых тегов
 def create_fake_tags():
     created_tags = []
-
-    for tag_name in fake.words(20):
+    for tag_name in fake.words(10):
         tag, created = Tag.objects.get_or_create(name=tag_name)
         created_tags.append(tag)
-
     return created_tags
 
+
+# Функция для создания пользователей
 def create_user():
     username = fake.user_name()
     email = f'{username}@example.com'
@@ -43,8 +49,9 @@ def create_user():
     first_name = fake.first_name()
     last_name = fake.last_name()
     bio = fake.sentence(nb_words=random.randint(10, 20))
-    email_verify = 1
+    email_verify = True
 
+    # Создаем пользователя без аватара
     user = User.objects.create_user(
         username=username,
         email=email,
@@ -54,28 +61,48 @@ def create_user():
         bio=bio,
         email_verify=email_verify,
     )
-    user.avatar.save(f'avatar_{username}.png', create_image(), save=True)
+
+    # Создаем изображение и загружаем его в Cloudinary
+    image_data = create_image()  # Генерируем одноцветное изображение
+    image_name = f'avatar_{username}'
+
+    # Загрузка изображения в Cloudinary
+    cloudinary_response = upload(image_data, public_id=image_name)
+    user.avatar = cloudinary_response['secure_url']  # Сохраняем URL изображения
+    user.save()
+
     return user
+
+
 
 def create_post(user):
     post = Post.objects.create(author=user)
-    for _ in range(random.randint(1, 2)):
-        image = Image.objects.create(post=post)
-        image.image.save(f'filename_{user.username}.png', create_image(), save=True)
+
+
+    image_data = create_image()
+    image_name = f'post_image_{user.username}'
+
+    cloudinary_response = upload(image_data, public_id=image_name)
+
+
+    image = Image.objects.create(post=post, image=cloudinary_response['secure_url'])
     return post
+
 
 class Command(BaseCommand):
     help = 'Generate fake data for users, posts, and tags'
 
     def handle(self, *args, **kwargs):
-        users_count = 10
+        users_count = 3
         users = [create_user() for _ in range(users_count)]
+
         tags = create_fake_tags()
+
 
         for user in users:
             for _ in range(random.randint(1, 3)):
                 post = create_post(user)
-                post.tags.add(*random.sample(tags, random.randint(1, 5)))
+                post.tags.add(*random.sample(tags, random.randint(1, 3)))
 
         posts = Post.objects.all()
         for post in posts:

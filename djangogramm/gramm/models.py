@@ -1,3 +1,4 @@
+from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
@@ -13,7 +14,7 @@ class User(AbstractUser):
 
     email_verify = models.BooleanField(default=False)
     bio = models.TextField(blank=True)
-    avatar = models.ImageField(upload_to='avatars/', blank=True)
+    avatar = CloudinaryField('avatars', blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']
@@ -25,10 +26,15 @@ class Post(models.Model):
     likes = models.ManyToManyField('User', blank=True, related_name='liked')
     creation_date = models.DateTimeField('User', auto_now=True)
 
+    def __str__(self):
+        return f"{self.author.email} - {self.creation_date}"
 
 class Image(models.Model):
-    image = ThumbnailerImageField(upload_to='images/%Y/%m/%d')
+    image = CloudinaryField('images')
     post = models.ForeignKey('Post', on_delete=models.CASCADE, related_name='images')
+
+    def __str__(self):
+        return f"Image for post {self.post.id}"
 
 
 class AuthorFollower(models.Model):

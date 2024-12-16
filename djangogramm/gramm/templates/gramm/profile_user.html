@@ -1,26 +1,10 @@
 {% extends 'gramm/base.html' %}
 {% load static %}
-{% load thumbnail %}
+{% load cloudinary %}
 {% block content %}
 
     <li class="list-group-item">
     <li>
-
-<!--        <br>-->
-<!--        {% if user.is_authenticated %}-->
-
-<!--        {% endif %}-->
-<!--    </li>-->
-<!--    {% if user.avatar %}-->
-<!--        <img src="{% thumbnail user.avatar "medium" %}" alt="User Avatar">-->
-<!--    {% else %}-->
-<!--        <img src="{% static 'images/default_avatar.jpeg' %}" alt="Default Avatar" width="150">-->
-<!--    {% endif %}-->
-
-<!--    <p>{{ user.bio }}</p>-->
-<!--    </li>-->
-
-
 
     <hr>
     {% include 'gramm/pagination.html' %}
@@ -32,9 +16,7 @@
             <p>{{ post.creation_date }}</p>
             <hr>
             {% for image in post.images.all %}
-                <a href="{{ image.image.url }}">
-                    <img src="{% thumbnail image.image "300x300" %} " alt="Image">
-                </a>
+                {% cloudinary image.image height=300 width=300 %}
             {% endfor %}
             <br>
             <p>Tags: {% for tag in post.tags.all %}#{{ tag }}{% if not forloop.last %} {% endif %}{% endfor %}</p>

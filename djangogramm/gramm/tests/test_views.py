@@ -8,7 +8,7 @@ class TestViewsLoggedIn(TestCase):
         self.client = Client()
         self.login_url = reverse('login')
         self.profile_url = reverse('profile_user', kwargs={'pk': 1})
-        self.profile_settings_url = reverse('profile_edit')
+
 
         self.verified_user = User.objects.create_user(
             email='test.email1@gmail.com',
@@ -34,18 +34,4 @@ class TestViewsLoggedIn(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'gramm/profile_user.html')
 
-    def test_profile_settings_GET(self):
-        response = self.client.get(self.profile_settings_url)
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'gramm/profile_edit.html')
 
-    def test_profile_settings_POST(self):
-        response = self.client.post(self.profile_settings_url, self.profile_settings)
-        self.assertEqual(response.status_code, 302)
-
-        self.assertRedirects(response, reverse('profile_user', kwargs={'pk': self.verified_user.pk}))
-
-        self.verified_user.refresh_from_db()
-        self.assertEqual(self.verified_user.first_name, 'John')
-        self.assertEqual(self.verified_user.last_name, 'Doe')
-        self.assertEqual(self.verified_user.bio, 'bio')

@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -41,7 +47,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'cloudinary_storage',
+    'cloudinary',
     'taggit',
     'easy_thumbnails',
 
@@ -134,6 +141,20 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = 'media/'
 
+
+# CLOUDINARY_STORAGE = {
+#     'CLOUD_NAME': 'dckmvaefv',
+#     'API_KEY': '467657669444271',
+#     'API_SECRET': '3bpwKbLwN6lYlwHq6PT0v_vAMd0'
+# }
+
+cloudinary.config(
+    cloud_name="dckmvaefv",
+    api_key="467657669444271",
+    api_secret="3bpwKbLwN6lYlwHq6PT0v_vAMd0"
+)
+
+CLOUDINARY_URL='cloudinary://<your_api_key>:<your_api_secret>@dckmvaefv'
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
