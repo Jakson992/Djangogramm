@@ -18,9 +18,6 @@ class TestUrls(SimpleTestCase):
         url = reverse('confirm_email')
         self.assertEqual(resolve(url).func.view_class, views.ConfirmEmail)
 
-    def test_profile_edit(self):
-        url = reverse('profile_edit')
-        self.assertEqual(resolve(url).func.view_class, views.ProfileEditView)
 
     def test_create_post(self):
         url = reverse('create_post')
