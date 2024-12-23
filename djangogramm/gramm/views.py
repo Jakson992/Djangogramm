@@ -1,5 +1,5 @@
 from random import sample
-
+from django.http import JsonResponse
 from django.contrib import auth
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
@@ -212,38 +212,86 @@ class CreatePostView(View):
             return redirect('feed')
 
 
+# @login_required
+# def like_post(request):
+#     if request.method == 'POST':
+#         form = LikeForm(request.POST)
+#         if form.is_valid():
+#             post_id = form.cleaned_data.get('post_id')
+#             post = Post.objects.get(id=post_id)
+#             if request.user not in post.likes.all():
+#                 post.likes.add(request.user)
+#             else:
+#                 post.likes.remove(request.user)
+#         referer = request.META.get('HTTP_REFERER', '/')
+#         return redirect(referer)
+
+
+
 @login_required
 def like_post(request):
-    if request.method == 'POST':
+    if request.method == 'POST': # and is_ajax(request):
         form = LikeForm(request.POST)
         if form.is_valid():
             post_id = form.cleaned_data.get('post_id')
-            post = Post.objects.get(id=post_id)
+            post = get_object_or_404(Post, id=post_id)
+
             if request.user not in post.likes.all():
                 post.likes.add(request.user)
+                liked = True
             else:
                 post.likes.remove(request.user)
-        referer = request.META.get('HTTP_REFERER', '/')
-        return redirect(referer)
+                liked = False
 
+            return JsonResponse({'liked': liked, 'likes_count': post.likes.count()}, status=200)
+        else:
+            return JsonResponse({'error': 'Invalid form data.'}, status=400)
+    return JsonResponse({'error': 'Invalid request.'}, status=400)
+
+
+# @login_required
+# def follow_user(request):
+#     if request.method == 'POST':
+#         author_id = request.POST.get('author_id')
+#         if not author_id:
+#             return HttpResponseForbidden("Author ID not provided.")
+#
+#         target_user = get_object_or_404(User, id=author_id)
+#
+#         existing_follow = AuthorFollower.objects.filter(follower=request.user, author=target_user)
+#         if existing_follow.exists():
+#             existing_follow.delete()
+#         else:
+#             AuthorFollower.objects.create(follower=request.user, author=target_user)
+#
+#         return redirect('feed')
+#     return HttpResponseForbidden("Invalid request method.")
 
 @login_required
 def follow_user(request):
     if request.method == 'POST':
         author_id = request.POST.get('author_id')
         if not author_id:
-            return HttpResponseForbidden("Author ID not provided.")
+            return JsonResponse({'error': 'Author ID not provided.'}, status=400)
 
-        target_user = get_object_or_404(User, id=author_id)
+        # Fetch the author (target user) or return 404 if not found
+        author = get_object_or_404(User, id=author_id)
 
-        existing_follow = AuthorFollower.objects.filter(follower=request.user, author=target_user)
+        # Check if the follow relationship exists
+        existing_follow = AuthorFollower.objects.filter(follower=request.user, author=author)
         if existing_follow.exists():
+            # If exists, delete it (unfollow)
             existing_follow.delete()
+            following_status = False
         else:
-            AuthorFollower.objects.create(follower=request.user, author=target_user)
+            # Otherwise, create a new follow relationship
+            AuthorFollower.objects.create(follower=request.user, author=author)
+            following_status = True
 
-        return redirect('feed')
-    return HttpResponseForbidden("Invalid request method.")
+        # Return the follow status as JSON
+        return JsonResponse({'following_status': following_status}, status=200)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=400)
 
 
 @method_decorator(login_required, name='dispatch')
