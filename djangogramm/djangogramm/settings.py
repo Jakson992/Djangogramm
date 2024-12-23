@@ -12,8 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 from pathlib import Path
 
-import cloudinary
-import cloudinary.uploader
+
 import cloudinary.api
 
 
