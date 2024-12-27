@@ -46,13 +46,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
     'cloudinary_storage',
     'cloudinary',
     'taggit',
     'easy_thumbnails',
-
     'gramm.apps.GrammConfig',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+
+]
+
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -63,10 +75,35 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 
 ]
 
 ROOT_URLCONF = 'djangogramm.urls'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': '925118516073-hae8oeta8holrd904dvqp49ed3vpc72b.apps.googleusercontent.com',
+            'secret': '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',
+
+        },
+        'SCOPE': ['profile', 'email', ],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': True,
+    },
+    'github': {
+        'APP': {
+            'client_id': 'Ov23lijlKUKZs1apCjLL',
+            'secret': 'c012f0b0f1c27a6714f36f255d54387106325125',
+
+        }
+    }
+
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
 
 TEMPLATES = [
     {
@@ -153,7 +190,7 @@ cloudinary.config(
     api_secret="3bpwKbLwN6lYlwHq6PT0v_vAMd0"
 )
 
-CLOUDINARY_URL='cloudinary://<your_api_key>:<your_api_secret>@dckmvaefv'
+# CLOUDINARY_URL='cloudinary://<your_api_key>:<your_api_secret>@dckmvaefv'
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

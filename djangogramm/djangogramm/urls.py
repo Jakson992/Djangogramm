@@ -25,6 +25,7 @@ from gramm.views import FeedPage
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', FeedPage.as_view(), name='feed'),
+    path('accounts/', include('allauth.urls')),
     # path('', TemplateView.as_view(template_name='gramm/home.html'), name='home'),
     path('gramm/', include('gramm.urls')),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + \

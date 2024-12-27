@@ -1,6 +1,9 @@
 from random import sample
+
+from allauth.socialaccount.models import SocialAccount
+from django.core.exceptions import ValidationError
 from django.http import JsonResponse
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
@@ -31,6 +34,39 @@ class LoginView(DjangoLoginView):
     template_name = 'registration/login.html'
     form_class = LoginUserForm
 
+    def form_valid(self, form):
+        """Якщо форма успішно пройдена, виконуємо додаткову валідацію."""
+        user = form.get_user()
+
+        # Перевірка, чи є у користувача соціальні акаунти (Google, GitHub тощо)
+        social_accounts = SocialAccount.objects.filter(user=user)
+        is_email_user = not any(account.provider in ['google', 'github'] for account in social_accounts)
+
+        if is_email_user:
+            # Користувач зареєстрований через email і пароль
+            login(self.request, user)
+            return redirect('home')  # Куди ви хочете перенаправити користувача
+        else:
+            # Якщо користувач зареєстрований через соціальний акаунт, виводимо помилку
+            return render(self.request, 'registration/login.html', {
+                'form': form,
+                'error_message': 'Please login using your social account.'
+            })
+
+    def form_invalid(self, form):
+        """Якщо форма не пройшла валідацію, показуємо помилку."""
+        return render(self.request, 'registration/login.html', {
+            'form': form,
+            'error_message': 'Invalid credentials'
+        })
+
+    def get(self, request, *args, **kwargs):
+        """Обробка GET запиту."""
+        return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        """Обробка POST запиту."""
+        return super().post(request, *args, **kwargs)
 
 class EmailVerify(View):
     def get(self, request, uidb64, token):
@@ -39,7 +75,7 @@ class EmailVerify(View):
         if user is not None and token_generator.check_token(user, token):
             user.email_verify = True
             user.save()
-            login(request, user)
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
             return redirect('feed')
         return redirect('invalid_verify')
 
@@ -227,10 +263,9 @@ class CreatePostView(View):
 #         return redirect(referer)
 
 
-
 @login_required
 def like_post(request):
-    if request.method == 'POST': # and is_ajax(request):
+    if request.method == 'POST':  # and is_ajax(request):
         form = LikeForm(request.POST)
         if form.is_valid():
             post_id = form.cleaned_data.get('post_id')
