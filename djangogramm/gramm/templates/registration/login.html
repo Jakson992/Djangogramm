@@ -1,18 +1,57 @@
 {% extends 'gramm/base.html' %}
-
+{% block title %}Profile - YourApp {% endblock %}
+{% load socialaccount %}
 {% block content %}
-    <h1>Login</h1>
-    <hr>
+<!-- Form Section -->
+<div class="container-login">
+    <div class="row align-items-center justify-content-center" style="height: 87vh;">
+        <div class="col-lg-3"></div>
 
-    {% if form.errors %}
-        <p>{{ form.errors.error }}</p>
-    {% endif %}
+        <div class="col-lg-6">
+            <div class="bg-white p-4 rounded-3 shadow text-center">
+                <h2 class="text-dark">Welcome!</h2>
 
-    <form action="{% url 'login' %}" method="post">
-    {{ form }}
-    {% csrf_token %}
-    <button type="submit" class="btn btn-success">submit</button>
-    </form>
 
-    <a href="{% url 'password_reset' %}">Forgot password?</a>
+                <a href="{% provider_login_url 'google' %}">
+                    <button class="btn btn-google">
+                        <img src="https://playtht-website-assets.s3.amazonaws.com/img/brand/google.svg"
+                             alt="Google logo"
+                             style="width: 20px; height: 20px;"/> Sign up with Google
+                    </button>
+                </a>
+
+                <a href="{% provider_login_url 'github' %}">
+                    <button class="btn btn-google github">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
+                             alt="GitHub logo"
+                             style="width: 20px; height: 20px;"/> Sign up with GitHub
+                    </button>
+                </a>
+
+
+                <div class="text-dark text-muted">or use your email and password</div>
+                <form class="form" action="{% url 'login' %}" method="post">
+<!--                    {{ form }}-->
+                    {% csrf_token %}
+                    <input type="email" class="form-control" name="username" id="email" placeholder="Email" required>
+                    <input type="password" class="form-control" name="password" id="Password1" placeholder="Password"
+                           required>
+
+                    <p class="text-dark mt-2">
+                        New User? <a href='{% url "register" %}'>Signup</a>
+                    </p>
+
+
+                    <button type="submit" class="btn btn-success">Submit</button>
+                </form>
+<!--                <div class="divider"></div>-->
+<!--                <p class="text-dark text-muted">-->
+<!--                    Forgot your password? <a href="#">Reset</a>-->
+<!--                </p>-->
+<!--            </div>-->
+        </div>
+
+        <div class="col-lg-3"></div>
+    </div>
+</div>
 {% endblock %}

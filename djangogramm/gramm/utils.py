@@ -1,3 +1,4 @@
+from allauth.socialaccount.models import SocialAccount
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
@@ -23,3 +24,5 @@ def send_email_for_verify(request, user,):
                        to=[user.email],
                        )
     email.send()
+
+

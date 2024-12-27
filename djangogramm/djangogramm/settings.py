@@ -16,6 +16,17 @@ from pathlib import Path
 import cloudinary.api
 
 
+from dotenv import load_dotenv
+
+# Загружаем переменные из файла .env
+load_dotenv()
+
+# Теперь можно использовать os.getenv() для получения переменных окружения
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_SECRET = os.getenv('GOOGLE_SECRET')
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_SECRET = os.getenv('GITHUB_SECRET')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -46,13 +57,25 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # 'django.contrib.sites',
     'cloudinary_storage',
     'cloudinary',
     'taggit',
     'easy_thumbnails',
-
     'gramm.apps.GrammConfig',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.github',
+
+]
+
+
+AUTHENTICATION_BACKENDS = [
+    'allauth.account.auth_backends.AuthenticationBackend',
+    'django.contrib.auth.backends.ModelBackend',
 ]
 
 MIDDLEWARE = [
@@ -63,10 +86,32 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware'
 
 ]
 
 ROOT_URLCONF = 'djangogramm.urls'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': GOOGLE_CLIENT_ID,
+            'secret': GOOGLE_SECRET,
+        },
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+        'METHOD': 'oauth2',
+        'VERIFIED_EMAIL': True,
+    },
+    'github': {
+        'APP': {
+            'client_id': GITHUB_CLIENT_ID,
+            'secret': GITHUB_SECRET,
+        }
+    }
+}
+
+SOCIALACCOUNT_LOGIN_ON_GET=True
 
 TEMPLATES = [
     {
@@ -153,7 +198,7 @@ cloudinary.config(
     api_secret="3bpwKbLwN6lYlwHq6PT0v_vAMd0"
 )
 
-CLOUDINARY_URL='cloudinary://<your_api_key>:<your_api_secret>@dckmvaefv'
+# CLOUDINARY_URL='cloudinary://<your_api_key>:<your_api_secret>@dckmvaefv'
 
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

@@ -17,7 +17,7 @@ class User(AbstractUser):
     avatar = CloudinaryField('avatars', blank=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
+    REQUIRED_FIELDS = []
 
 
 class Post(models.Model):
