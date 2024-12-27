@@ -16,6 +16,17 @@ from pathlib import Path
 import cloudinary.api
 
 
+from dotenv import load_dotenv
+
+# Загружаем переменные из файла .env
+load_dotenv()
+
+# Теперь можно использовать os.getenv() для получения переменных окружения
+GOOGLE_CLIENT_ID = os.getenv('GOOGLE_CLIENT_ID')
+GOOGLE_SECRET = os.getenv('GOOGLE_SECRET')
+GITHUB_CLIENT_ID = os.getenv('GITHUB_CLIENT_ID')
+GITHUB_SECRET = os.getenv('GITHUB_SECRET')
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -84,23 +95,20 @@ ROOT_URLCONF = 'djangogramm.urls'
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
-            'client_id': '925118516073-hae8oeta8holrd904dvqp49ed3vpc72b.apps.googleusercontent.com',
-            'secret': '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',
-
+            'client_id': GOOGLE_CLIENT_ID,
+            'secret': GOOGLE_SECRET,
         },
-        'SCOPE': ['profile', 'email', ],
+        'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'METHOD': 'oauth2',
         'VERIFIED_EMAIL': True,
     },
     'github': {
         'APP': {
-            'client_id': 'Ov23lijlKUKZs1apCjLL',
-            'secret': 'c012f0b0f1c27a6714f36f255d54387106325125',
-
+            'client_id': GITHUB_CLIENT_ID,
+            'secret': GITHUB_SECRET,
         }
     }
-
 }
 
 SOCIALACCOUNT_LOGIN_ON_GET=True
