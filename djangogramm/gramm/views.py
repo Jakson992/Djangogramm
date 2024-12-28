@@ -34,39 +34,13 @@ class LoginView(DjangoLoginView):
     template_name = 'registration/login.html'
     form_class = LoginUserForm
 
-    def form_valid(self, form):
-        """Якщо форма успішно пройдена, виконуємо додаткову валідацію."""
-        user = form.get_user()
-
-        # Перевірка, чи є у користувача соціальні акаунти (Google, GitHub тощо)
-        social_accounts = SocialAccount.objects.filter(user=user)
-        is_email_user = not any(account.provider in ['google', 'github'] for account in social_accounts)
-
-        if is_email_user:
-            # Користувач зареєстрований через email і пароль
-            login(self.request, user)
-            return redirect('home')  # Куди ви хочете перенаправити користувача
-        else:
-            # Якщо користувач зареєстрований через соціальний акаунт, виводимо помилку
-            return render(self.request, 'registration/login.html', {
-                'form': form,
-                'error_message': 'Please login using your social account.'
-            })
-
-    def form_invalid(self, form):
-        """Якщо форма не пройшла валідацію, показуємо помилку."""
-        return render(self.request, 'registration/login.html', {
-            'form': form,
-            'error_message': 'Invalid credentials'
-        })
-
-    def get(self, request, *args, **kwargs):
-        """Обробка GET запиту."""
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        """Обробка POST запиту."""
-        return super().post(request, *args, **kwargs)
+    # def form_valid(self, form):
+    #     # Проверяем, зарегистрирован ли пользователь через Google
+    #     user = form.get_user()
+    #     if user.socialaccount_set.filter(provider='google').exists():
+    #         form.add_error(None, "Вы зарегистрировались через Google. Пожалуйста, используйте кнопку 'Войти через Google'.")
+    #         return self.form_invalid(form)
+    #     return super().form_valid(form)
 
 class EmailVerify(View):
     def get(self, request, uidb64, token):

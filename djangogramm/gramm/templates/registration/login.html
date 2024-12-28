@@ -11,6 +11,11 @@
             <div class="bg-white p-4 rounded-3 shadow text-center">
                 <h2 class="text-dark">Welcome!</h2>
 
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
 
                 <a href="{% provider_login_url 'google' %}">
                     <button class="btn btn-google">
@@ -19,7 +24,11 @@
                              style="width: 20px; height: 20px;"/> Sign up with Google
                     </button>
                 </a>
-
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
                 <a href="{% provider_login_url 'github' %}">
                     <button class="btn btn-google github">
                         <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg"
@@ -31,7 +40,7 @@
 
                 <div class="text-dark text-muted">or use your email and password</div>
                 <form class="form" action="{% url 'login' %}" method="post">
-<!--                    {{ form }}-->
+                    <!--                    {{ form }}-->
                     {% csrf_token %}
                     <input type="email" class="form-control" name="username" id="email" placeholder="Email" required>
                     <input type="password" class="form-control" name="password" id="Password1" placeholder="Password"
@@ -44,14 +53,14 @@
 
                     <button type="submit" class="btn btn-success">Submit</button>
                 </form>
-<!--                <div class="divider"></div>-->
-<!--                <p class="text-dark text-muted">-->
-<!--                    Forgot your password? <a href="#">Reset</a>-->
-<!--                </p>-->
-<!--            </div>-->
-        </div>
+                <!--                <div class="divider"></div>-->
+                <!--                <p class="text-dark text-muted">-->
+                <!--                    Forgot your password? <a href="#">Reset</a>-->
+                <!--                </p>-->
+                <!--            </div>-->
+            </div>
 
-        <div class="col-lg-3"></div>
+            <div class="col-lg-3"></div>
+        </div>
     </div>
-</div>
-{% endblock %}
+    {% endblock %}
