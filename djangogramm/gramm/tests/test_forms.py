@@ -19,6 +19,7 @@ class LoginUserFormTests(TestCase):
         )
 
     def test_creation_data(self):
+
         request = self.factory.post('/login')
         form_data = {'username': 'test@example.com', 'password': 'password123'}
 
